@@ -8,9 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-
-
-@interface NTSComic : NSObject
+@interface NTSComic : NSObject <NSCoding>
 
 @property(nonatomic, readonly) NSString *title;
 @property(nonatomic, readonly) NSString *safeTitle;
@@ -23,7 +21,18 @@
 @property(nonatomic, readonly) NSNumber *comicNumber;
 
 @property(nonatomic, readonly) NSURL    *imageURL;
+@property(nonatomic, readonly) UIImage  *image;
 
++ (NSString *)pathToComicWithNumber:(NSNumber *)number;
+
+// This method magically creates all properties except `image`.
+// You have to call downloadImageWithCompletionHandler: for it to be downloaded.
 - (instancetype)initWithJSONDictionary:(NSDictionary *)dictionary;
+
+// Persistence
+- (instancetype)initWithContentsOfFile:(NSString *)path;
+- (void)saveToFile;
+
+- (void)downloadImageWithCompletionHandler:(void (^) (UIImage *, NSError *))completionHandler;
 
 @end

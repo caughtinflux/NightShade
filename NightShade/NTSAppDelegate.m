@@ -7,6 +7,8 @@
 //
 
 #import "NTSAppDelegate.h"
+#import "NTSComic.h"
+#import "NTSAPIRequest.h"
 
 @implementation NTSAppDelegate
 
@@ -16,6 +18,19 @@
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+    
+    
+    NTSAPIRequest *request = [[NTSAPIRequest alloc] init];
+    [request getLatestComicWithCompletion:^(NTSComic *comic, NSError *error) {
+        NSLog(@"%@", comic);
+        [comic downloadImageWithCompletionHandler:^(UIImage *image, NSError *imageDownloadError) {
+            [comic saveToFile];
+        }];
+    }];
+    
+    NTSComic *aComic = [[NTSComic alloc] initWithContentsOfFile:[NTSComic pathToComicWithNumber:@1195]];
+    NSLog(@"%@", aComic);
+    
     return YES;
 }
 
