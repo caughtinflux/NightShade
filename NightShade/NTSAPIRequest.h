@@ -14,7 +14,7 @@ typedef void (^NTSCompletionHandler)(NTSComic *, NSError *);
 
 @interface NTSAPIRequest : NSObject
 
-- (void)getLatestComicWithCompletionHandler:(NTSCompletionHandler)handler;
-- (void)getComicForNumber:(NSNumber *)comicNumber withCompletionHandler:(NTSCompletionHandler)handler;
+- (void)getLatestComicWithCompletion:(NTSCompletionHandler)handler;
+- (void)getComicForNumber:(NSNumber *)comicNumber withCompletion:(NTSCompletionHandler)handler;
 
 @end

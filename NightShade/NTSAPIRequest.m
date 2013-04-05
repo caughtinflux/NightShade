@@ -11,38 +11,27 @@
 
 @implementation NTSAPIRequest
 
-- (void)getLatestComicWithCompletionHandler:(NTSCompletionHandler)handler
+- (void)getLatestComicWithCompletion:(NTSCompletionHandler)handler
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self _downloadComicAtURL:[NSURL URLWithString:@"http://xkcd.com/info.0.json"] handler:handler];
-    });
+	[self getComicForNumber:@0 withCompletion:handler];
 }
 
-- (void)getComicForNumber:(NSNumber *)comicNumber withCompletionHandler:(NTSCompletionHandler)handler
+- (void)getComicForNumber:(NSNumber *)comicNumber withCompletion:(NTSCompletionHandler)handler
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSString *link = [NSString stringWithFormat:@"http://xkcd.com/%i/info.0.json", [comicNumber integerValue]];
-        
-        [self _downloadComicAtURL:[NSURL URLWithString:link] handler:handler];
-    });
-}
-
-- (void)_downloadComicAtURL:(NSURL *)URL handler:(NTSCompletionHandler)handler
-{
-    NSAssert((handler != nil), @"NTSAPIRequest calls must have a completion handler!");
-    
-    NTSComic *comic = nil;
-    NSError *error = nil;
-    
-    NSData *rawData = [NSData dataWithContentsOfURL:URL options:NSDataReadingMappedIfSafe error:&error];
-    if (!error) {
-        NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:rawData options:kNilOptions error:&error];
-        // reuse the same NSError object.
-        if (!error) {
-            comic = [[NTSComic alloc] initWithJSONDictionary:dictionary];
-        }
-    }
-    handler(comic, error);
+	NSString *feedURLString = [NSString stringWithFormat:@"http://xkcd.com/%i/info.0.json", [comicNumber integerValue]];
+	NSURL *feedURL = [NSURL URLWithString:([comicNumber isEqualToNumber:@0] ? @"http://xkcd.com/info.0.json" : feedURLString)];
+	NSURLRequest *feedURLRequest = [[NSURLRequest alloc] initWithURL:feedURL];
+	
+	[NSURLConnection sendAsynchronousRequest:feedURLRequest queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+		NTSComic *comic = nil;
+		
+		if (!error) {
+			NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+			comic = [[NTSComic alloc] initWithJSONDictionary:dictionary];
+		}
+		
+		handler(comic, error);
+	}];
 }
 
 @end

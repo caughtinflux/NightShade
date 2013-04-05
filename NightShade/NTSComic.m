@@ -28,7 +28,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@ Title: %@ creation date: %@, comic number: %@, image URL: %@", [super description], _title, _dateString, _comicNumber, _imageURL];
+    return [NSString stringWithFormat:@"%@ title: %@ creation date: %@, comic number: %@, image URL: %@", [super description], _title, _dateString, _comicNumber, _imageURL];
 }
 
 @end
