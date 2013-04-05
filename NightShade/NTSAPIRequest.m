@@ -20,6 +20,15 @@
 {
     NSAssert((handler != nil), @"A completion handler must be called into NTSAPIRequest calls!");
     
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NTSComic pathToComicWithNumber:comicNumber]]) {
+        NTSComic *comic = [[NTSComic alloc] initWithContentsOfFile:[NTSComic pathToComicWithNumber:comicNumber]];
+        if (comic) {
+            // Call completion handler only if the comic was created successfully, else continue with the usual method, and download it.
+            handler(comic, nil);
+            return;
+        }
+    }
+    
 	NSString *feedURLString = [NSString stringWithFormat:@"http://xkcd.com/%i/info.0.json", [comicNumber integerValue]];
 	NSURL *feedURL = [NSURL URLWithString:([comicNumber isEqualToNumber:@0] ? @"http://xkcd.com/info.0.json" : feedURLString)];
 	NSURLRequest *feedURLRequest = [[NSURLRequest alloc] initWithURL:feedURL];
