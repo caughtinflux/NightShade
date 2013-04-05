@@ -18,6 +18,8 @@
 
 - (void)getComicForNumber:(NSNumber *)comicNumber withCompletion:(NTSCompletionHandler)handler
 {
+    NSAssert((handler != nil), @"A completion handler must be called into NTSAPIRequest calls!");
+    
 	NSString *feedURLString = [NSString stringWithFormat:@"http://xkcd.com/%i/info.0.json", [comicNumber integerValue]];
 	NSURL *feedURL = [NSURL URLWithString:([comicNumber isEqualToNumber:@0] ? @"http://xkcd.com/info.0.json" : feedURLString)];
 	NSURLRequest *feedURLRequest = [[NSURLRequest alloc] initWithURL:feedURL];
@@ -29,7 +31,6 @@
 			NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
 			comic = [[NTSComic alloc] initWithJSONDictionary:dictionary];
 		}
-		
 		handler(comic, error);
 	}];
 }
