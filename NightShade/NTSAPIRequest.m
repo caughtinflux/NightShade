@@ -1,33 +1,36 @@
-//
-//  NTSAPIRequest.m
-//  NightShade
-//
-//  Created by Aditya KD on 04/04/13.
-//  Copyright (c) 2013 ProtoFlux. All rights reserved.
-//
+/*
+ NTSAPIRequest.m
+ NightShade
+ Created by Aditya KD on 04/04/13.
+ 
+ Copyright 2013 ProtoFlux
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 #import "NTSAPIRequest.h"
 #import "NTSComic.h"
 
 @implementation NTSAPIRequest
 
-- (void)getLatestComicWithCompletion:(NTSCompletionHandler)handler
+- (void)downloadLatestComicWithCompletion:(NTSCompletionHandler)handler
 {
-	[self getComicForNumber:@0 withCompletion:handler];
+	[self downloadComicWithNumber:@0 withCompletion:handler];
 }
 
-- (void)getComicForNumber:(NSNumber *)comicNumber withCompletion:(NTSCompletionHandler)handler
+- (void)downloadComicWithNumber:(NSNumber *)comicNumber withCompletion:(NTSCompletionHandler)handler
 {
     NSAssert((handler != nil), @"A completion handler must be called into NTSAPIRequest calls!");
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NTSComic pathToComicWithNumber:comicNumber]]) {
-        NTSComic *comic = [[NTSComic alloc] initWithContentsOfFile:[NTSComic pathToComicWithNumber:comicNumber]];
-        if (comic) {
-            // Call completion handler only if the comic was created successfully, else continue with the usual method, and download it.
-            handler(comic, nil);
-            return;
-        }
-    }
     
 	NSString *feedURLString = [NSString stringWithFormat:@"http://xkcd.com/%i/info.0.json", [comicNumber integerValue]];
 	NSURL *feedURL = [NSURL URLWithString:([comicNumber isEqualToNumber:@0] ? @"http://xkcd.com/info.0.json" : feedURLString)];
