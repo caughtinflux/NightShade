@@ -1,10 +1,22 @@
-//
-//  NTSComic.m
-//  NightShade
-//
-//  Created by Aditya KD on 04/04/13.
-//  Copyright (c) 2013 ProtoFlux. All rights reserved.
-//
+/*
+ NTSComic.m
+ NightShade
+ Created by Aditya KD on 04/04/13.
+ 
+ Copyright 2013 ProtoFlux
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 #import "NTSComic.h"
 
@@ -21,13 +33,6 @@ static NSString * const NTSComicImageURLKey   = @"NTSComicImageURL";
 static NSString * const NTSComicImageKey      = @"NTSComicImage";
 
 @implementation NTSComic {}
-
-+ (NSString *)pathToComicWithNumber:(NSNumber *)number
-{
-    NSString *documentsDirectoryPath = (NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES))[0];
-    return [[documentsDirectoryPath stringByAppendingString:@"/"] stringByAppendingString:[number stringValue]];
-}
-
 #pragma mark - Designated Initializer(s)
 - (instancetype)initWithJSONDictionary:(NSDictionary *)dictionary
 {
@@ -48,13 +53,6 @@ static NSString * const NTSComicImageKey      = @"NTSComicImage";
 - (instancetype)initWithContentsOfFile:(NSString *)path
 {
     return [NSKeyedUnarchiver unarchiveObjectWithFile:path];
-}
-
-
-#pragma mark -
-- (NSString *)description
-{
-    return [NSString stringWithFormat:@"%@ title: %@ creation date: %@, comic number: %@, image URL: %@", [super description], _title, _dateString, _comicNumber, _imageURL];
 }
 
 #pragma mark - NSCoding Implementation
@@ -89,9 +87,8 @@ static NSString * const NTSComicImageKey      = @"NTSComicImage";
     [coder encodeObject:_image forKey:NTSComicImageKey];
 }
 
-- (void)saveToFile
+- (void)saveToFileAtPath:(NSString *)path
 {
-    NSString *path = [NTSComic pathToComicWithNumber:_comicNumber];
     [NSKeyedArchiver archiveRootObject:self toFile:path];
 }
 
@@ -107,6 +104,12 @@ static NSString * const NTSComicImageKey      = @"NTSComicImage";
             completionHandler(image, error);
         }
     }];
+}
+
+#pragma mark -
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"%@ title: %@ creation date: %@, comic number: %@, image URL: %@", [super description], _title, _dateString, _comicNumber, _imageURL];
 }
 
 @end
