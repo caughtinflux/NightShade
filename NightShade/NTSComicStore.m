@@ -57,11 +57,17 @@
     return self;
 }
 
-- (void)addComicToStoreIfNecessary:(NTSComic *)comic
+- (void)addComicToStore:(NTSComic *)comic force:(BOOL)forced
 {
     @synchronized(self) {
         NSString *path = [self _pathForComicWithNumber:[comic comicNumber]];
-        if (!([_fileManager fileExistsAtPath:path])) {
+        if (!forced) {
+            if (![_fileManager fileExistsAtPath:path]) {
+                [comic saveToFileAtPath:path];
+            }
+        }
+        else {
+            [self removeComicFromStore:comic usingHandler:nil];
             [comic saveToFileAtPath:path];
         }
     }
@@ -70,9 +76,13 @@
 - (void)removeComicFromStore:(NTSComic *)comic usingHandler:(void (^) (NSError *))handler
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSError *error = nil;
-        [_fileManager removeItemAtPath:[self _pathForComicWithNumber:[comic comicNumber]] error:&error];
-        handler(error);
+        @synchronized(self) {
+            NSError *error = nil;
+            [_fileManager removeItemAtPath:[self _pathForComicWithNumber:[comic comicNumber]] error:&error];
+            if (handler) {
+                handler(error);
+            }
+        }
     });
 }
 
@@ -84,17 +94,36 @@
 - (NSArray *)allLocalComics
 {
     NSString *comicsDirectoryPath = [((NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES))[0]) stringByAppendingString:@"/Comics/"];
-    return [_fileManager contentsOfDirectoryAtPath:comicsDirectoryPath error:nil];
+    NSArray *dirContents = [_fileManager contentsOfDirectoryAtPath:comicsDirectoryPath error:NULL];
+    
+    // Order it by number
+    dirContents = [dirContents sortedArrayUsingComparator:^(NSString *obj1, NSString *obj2) {
+        return [obj1 localizedStandardCompare:obj2];
+    }];
+    
+    NSMutableArray *localComics = [NSMutableArray arrayWithCapacity:dirContents.count];
+    
+    for (NSString *comicName in dirContents) {
+        // Iterate through the paths, creating and adding comic objects as required.
+        if ([comicName hasSuffix:@".ntscomic"]) {
+            NSString *fullPath = [comicsDirectoryPath stringByAppendingString:comicName];
+            [localComics addObject:[[NTSComic alloc] initWithContentsOfFile:fullPath]];
+        }
+    }
+    
+    // Do not want bad things happening, if by accident, so create NSArray.
+    return [NSArray arrayWithArray:localComics];
 }
 
 #pragma mark - Private Methods
 - (void)_createComicsDirectory
 {
-    [_fileManager createDirectoryAtPath:[((NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES))[0]) stringByAppendingString:@"/Comics/"]
+    @synchronized(self) {
+        [_fileManager createDirectoryAtPath:[((NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES))[0]) stringByAppendingString:@"/Comics/"]
             withIntermediateDirectories:YES
                              attributes:nil
-                                  error:NULL];
-    // Doing this with withIntermediateDirectories set makes sure that it doesn't cause an error if the file already exists.
+                                  error:NULL]; // Doing this with withIntermediateDirectories set makes sure that it doesn't cause an error if the file already exists.
+    }
 }
 
 - (NSString *)_pathForComicWithNumber:(NSNumber *)number

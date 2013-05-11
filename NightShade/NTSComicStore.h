@@ -26,7 +26,8 @@
 
 + (instancetype)defaultStore;
 
-- (void)addComicToStoreIfNecessary:(NTSComic *)comic;
+// Forcing a comic to be added will overwrite any existing comic at the save path. This might be needed in cases where the local comic doesn't have it's image data, but the new one does.
+- (void)addComicToStore:(NTSComic *)comic force:(BOOL)forced;
 - (void)removeComicFromStore:(NTSComic *)comic usingHandler:(void (^) (NSError *))handler;
 
 - (NTSComic *)comicWithNumber:(NSNumber *)number;
