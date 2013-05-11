@@ -75,16 +75,16 @@ static NSString * const NTSComicImageKey      = @"NTSComicImage";
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-    [coder encodeObject:_title      forKey:NTSComicTitleKey];
-    [coder encodeObject:_safeTitle  forKey:NTSComicSafeTitleKey];
-    [coder encodeObject:_transcript forKey:NTSComicTranscriptKey];
-    [coder encodeObject:_alt forKey:NTSComicAltKey];
-    [coder encodeObject:_link forKey:NTSComicLinkKey];
-    [coder encodeObject:_news forKey:NTSComicNewsKey];
-    [coder encodeObject:_dateString forKey:NTSComicDateStringKey];
+    [coder encodeObject:_title       forKey:NTSComicTitleKey];
+    [coder encodeObject:_safeTitle   forKey:NTSComicSafeTitleKey];
+    [coder encodeObject:_transcript  forKey:NTSComicTranscriptKey];
+    [coder encodeObject:_alt         forKey:NTSComicAltKey];
+    [coder encodeObject:_link        forKey:NTSComicLinkKey];
+    [coder encodeObject:_news        forKey:NTSComicNewsKey];
+    [coder encodeObject:_dateString  forKey:NTSComicDateStringKey];
     [coder encodeObject:_comicNumber forKey:NTSComicNumberKey];
-    [coder encodeObject:_imageURL forKey:NTSComicImageURLKey];
-    [coder encodeObject:_image forKey:NTSComicImageKey];
+    [coder encodeObject:_imageURL    forKey:NTSComicImageURLKey];
+    [coder encodeObject:_image       forKey:NTSComicImageKey];
 }
 
 - (void)saveToFileAtPath:(NSString *)path
