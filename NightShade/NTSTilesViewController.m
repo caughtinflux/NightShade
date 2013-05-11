@@ -93,12 +93,13 @@
 {
     [NTSAPIRequest downloadLatestComicWithImage:YES completion:^(NTSComic *comic, NSError *error) {
         if (error || ([self _localComicHasImage:comic.comicNumber])) {
-            NSLog(@"Already have latest comic: %@", [[NTSComicStore defaultStore] comicWithNumber:comic.comicNumber]);
+            NSLog(@"Already have the latest comic: %@", [[NTSComicStore defaultStore] comicWithNumber:comic.comicNumber]);
             return;
         }
         
-        
+
         [[NTSComicStore defaultStore] addComicToStore:comic force:YES];
+        _allComics = [[[[NTSComicStore defaultStore] allLocalComics] reverseObjectEnumerator] allObjects];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
         });
