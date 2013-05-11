@@ -66,7 +66,7 @@ static NSString * const NTSComicImageKey      = @"NTSComicImage";
         _link        = [[decoder decodeObjectForKey:NTSComicLinkKey] copy];
         _news        = [[decoder decodeObjectForKey:NTSComicNewsKey] copy];
         _dateString  = [[decoder decodeObjectForKey:NTSComicDateStringKey] copy];
-        _comicNumber = [[decoder decodeObjectForKey:NTSComicDateStringKey] copy];
+        _comicNumber = [[decoder decodeObjectForKey:NTSComicNumberKey] copy];
         _imageURL    = [[decoder decodeObjectForKey:NTSComicImageURLKey] copy];
         _image       = [[decoder decodeObjectForKey:NTSComicImageKey] copy];
     }
@@ -75,8 +75,8 @@ static NSString * const NTSComicImageKey      = @"NTSComicImage";
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-    [coder encodeObject:_title forKey:NTSComicTitleKey];
-    [coder encodeObject:_safeTitle forKey:NTSComicSafeTitleKey];
+    [coder encodeObject:_title      forKey:NTSComicTitleKey];
+    [coder encodeObject:_safeTitle  forKey:NTSComicSafeTitleKey];
     [coder encodeObject:_transcript forKey:NTSComicTranscriptKey];
     [coder encodeObject:_alt forKey:NTSComicAltKey];
     [coder encodeObject:_link forKey:NTSComicLinkKey];
@@ -109,7 +109,7 @@ static NSString * const NTSComicImageKey      = @"NTSComicImage";
 #pragma mark -
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@ title: %@ creation date: %@, comic number: %@, image URL: %@", [super description], _title, _dateString, _comicNumber, _imageURL];
+    return [NSString stringWithFormat:@"%@ title: %@, creation date: %@, comic number: %@, image URL: %@ image: %@", [super description], _title, _dateString, _comicNumber, _imageURL, _image];
 }
 
 @end
