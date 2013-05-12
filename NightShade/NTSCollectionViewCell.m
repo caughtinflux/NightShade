@@ -48,6 +48,8 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+    self.imageView.frame = self.bounds;
+    self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
 }
 
 - (void)_setup
@@ -55,6 +57,7 @@
     self.layer.shadowOpacity = 0.8f;
     self.layer.shadowOffset = CGSizeZero;
     self.layer.shadowRadius = 2.f;
+    self.layer.shadowRadius = 2.2f;
     self.layer.masksToBounds = NO;
     self.layer.shadowColor = [UIColor blackColor].CGColor;
     self.layer.shouldRasterize = YES;
