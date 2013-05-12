@@ -48,6 +48,7 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+    
     self.imageView.frame = self.bounds;
     self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
 }
@@ -56,21 +57,11 @@
 {
     self.layer.shadowOpacity = 0.8f;
     self.layer.shadowOffset = CGSizeZero;
-    self.layer.shadowRadius = 2.f;
     self.layer.shadowRadius = 2.2f;
     self.layer.masksToBounds = NO;
     self.layer.shadowColor = [UIColor blackColor].CGColor;
     self.layer.shouldRasterize = YES;
     self.layer.rasterizationScale = [UIScreen mainScreen].scale;
 }
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
 
 @end
