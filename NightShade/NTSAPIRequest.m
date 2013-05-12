@@ -38,6 +38,7 @@
     
 	[NSURLConnection sendAsynchronousRequest:[self _URLRequestForComicNumber:comicNumber] queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {		
 		if (error) {
+            NSLog(@"Error downloading comic data. %i : %@", error.code, error.localizedDescription);
             handler(nil, error);
             return;
         }
