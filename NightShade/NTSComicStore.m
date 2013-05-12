@@ -61,14 +61,16 @@
 {
     @synchronized(self) {
         NSString *path = [self _pathForComicWithNumber:[comic comicNumber]];
-        if (!forced) {
+        if (forced == NO) {
             if (![_fileManager fileExistsAtPath:path]) {
                 [comic saveToFileAtPath:path];
             }
         }
         else {
-            [self removeComicFromStore:comic usingHandler:nil];
-            [comic saveToFileAtPath:path];
+            // Remove the existing comic if a comic exists already
+            [self removeComicFromStore:comic usingHandler:^(NSError *error){
+                [comic saveToFileAtPath:path]; 
+            }];
         }
     }
 }
