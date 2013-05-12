@@ -21,6 +21,7 @@
 - (NTSComic *)_comicForIndexPath:(NSIndexPath *)ip;
 - (void)_addLatestComicToCollectionAndStore;
 - (void)_downloadMissingItemsInRange:(NSRange)range addToStore:(BOOL)shouldAddToStore;
+- (void)_refreshComics;
 
 @end
 
@@ -31,11 +32,12 @@
 {
     [super viewDidLoad];
     
-    self.collectionView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
+    self.collectionView.backgroundColor = [UIColor colorWithWhite:0.f alpha:1.f];
+    [[UIApplication sharedApplication] setStatusBarHidden:YES];
     self.collectionView.delegate = self;
     
-    _allComics = [[[[NTSComicStore defaultStore] allLocalComics] reverseObjectEnumerator] allObjects];
     
+    [self _refreshComics];
     [self _addLatestComicToCollectionAndStore];
 }
 
@@ -62,7 +64,7 @@
     static NSString *CellIdentifier = @"NTSComicPreviewCell";
     
     NTSCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:CellIdentifier forIndexPath:indexPath];
-    cell.imageView.image = [(NTSComic *)[_allComics objectAtIndex:indexPath.item] image];
+    cell.imageView.image = [[self _comicForIndexPath:indexPath] image];
     
     return cell;
 }
@@ -75,31 +77,29 @@
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
-    return 0.f;
+    return 10.f;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
 {
-    return 0.f;
+    return 10.f;
 }
 
 #pragma mark - Private
 - (NTSComic *)_comicForIndexPath:(NSIndexPath *)ip
 {
-    return _allComics[ip.row];
+    return _allComics[ip.item];
 }
 
 - (void)_addLatestComicToCollectionAndStore
 {
     [NTSAPIRequest downloadLatestComicWithImage:YES completion:^(NTSComic *comic, NSError *error) {
         if (error || ([self _localComicHasImage:comic.comicNumber])) {
-            NSLog(@"Already have the latest comic: %@", [[NTSComicStore defaultStore] comicWithNumber:comic.comicNumber]);
             return;
         }
         
-
         [[NTSComicStore defaultStore] addComicToStore:comic force:YES];
-        _allComics = [[[[NTSComicStore defaultStore] allLocalComics] reverseObjectEnumerator] allObjects];
+        [self _refreshComics];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
         });
@@ -109,22 +109,26 @@
 
 - (void)_downloadMissingItemsInRange:(NSRange)range addToStore:(BOOL)shouldAddToStore
 {
-    NSUInteger targetNumber = range.location + range.length;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    NSInteger targetNumber = range.location + range.length;
     
-    for (NSUInteger comicNumber = range.location; comicNumber < targetNumber; comicNumber++) {
+    for (NSInteger comicNumber = range.location; comicNumber <= targetNumber; comicNumber++) {
         if ([self _localComicHasImage:@(comicNumber)]) {
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
             continue;
         }
         [NTSAPIRequest downloadComicWithNumber:@(comicNumber) getImage:YES withCompletion:^(NTSComic *comic, NSError *error) {
             if (error) {
                 return;
             }
+            
             if (shouldAddToStore) {
                 [[NTSComicStore defaultStore] addComicToStore:comic force:YES];
-                
-                if (comicNumber == targetNumber) {
-                    [self.collectionView reloadData];
-                }
+            }
+            
+            if (comicNumber == targetNumber) {
+                [self _refreshComics];
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
             }
         }];
     }
@@ -134,6 +138,11 @@
 {
     // !!!!!!!
     return !!([[NTSComicStore defaultStore] comicWithNumber:number].image);
+}
+
+- (void)_refreshComics
+{
+    _allComics = [[[[NTSComicStore defaultStore] allLocalComics] reverseObjectEnumerator] allObjects];
 }
 
 @end
