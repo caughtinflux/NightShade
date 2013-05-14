@@ -32,13 +32,13 @@
 {
     [super viewDidLoad];
     
-    self.collectionView.backgroundColor = [UIColor colorWithWhite:0.f alpha:1.f];
-    [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    self.collectionView.backgroundColor = [UIColor colorWithWhite:.8f alpha:1.f];
     self.collectionView.delegate = self;
     
     
     [self _refreshComics];
     [self _addLatestComicToCollectionAndStore];
+    [self _downloadMissingItemsInRange:NSMakeRange(50, 20) addToStore:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -72,7 +72,7 @@
 #pragma mark - Layout Delegate
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return CGSizeMake(100, 100);
+    return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? CGSizeMake(100, 100) : CGSizeMake(150, 150);
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
@@ -100,6 +100,7 @@
         
         [[NTSComicStore defaultStore] addComicToStore:comic force:YES];
         [self _refreshComics];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
         });
@@ -114,20 +115,25 @@
     
     for (NSInteger comicNumber = range.location; comicNumber <= targetNumber; comicNumber++) {
         if ([self _localComicHasImage:@(comicNumber)]) {
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            if (comicNumber == targetNumber) {
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            }
             continue;
         }
         [NTSAPIRequest downloadComicWithNumber:@(comicNumber) getImage:YES withCompletion:^(NTSComic *comic, NSError *error) {
             if (error) {
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
                 return;
             }
             
             if (shouldAddToStore) {
+                NSLog(@"Downloaded: %@", comic);
                 [[NTSComicStore defaultStore] addComicToStore:comic force:YES];
             }
             
             if (comicNumber == targetNumber) {
                 [self _refreshComics];
+                [self.collectionView reloadData];
                 [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
             }
         }];
