@@ -131,7 +131,7 @@
 - (NSString *)_pathForComicWithNumber:(NSNumber *)number
 {
     NSString *comicsDirectoryPath = [((NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES))[0]) stringByAppendingString:@"/Comics/"];
-    return [comicsDirectoryPath stringByAppendingString:[[number stringValue] stringByAppendingString:@".ntscomic"]];
+    return [comicsDirectoryPath stringByAppendingFormat:@"%@.ntscomic", [number stringValue]];
 }
 
 @end
