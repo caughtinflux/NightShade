@@ -66,6 +66,8 @@
     return self;
 }
 
+
+#pragma mark - Modification
 - (void)addComicToStore:(NTSComic *)comic
 {
     @synchronized(self) {
@@ -83,6 +85,8 @@
     }
 }
 
+
+#pragma mark - Queries
 - (NTSComic *)comicWithNumber:(NSNumber *)number
 {
     return _comicsDict[number];
@@ -104,6 +108,8 @@
     return _comicNumbers;
 }
 
+
+#pragma mark - Basics
 - (void)refreshComics
 {
     @synchronized(self) {
@@ -121,7 +127,7 @@
                     _comicsDict[comic.comicNumber] = comic;
                 }
                 else {
-                    NSLog(@"An error occurred when creating a comic from %@", comicName);
+                    DLog(@"An error occurred when creating a comic from %@", comicName);
                 }
             }
         }

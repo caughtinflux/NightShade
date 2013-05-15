@@ -33,9 +33,10 @@
 
 + (instancetype)defaultStore;
 
-
+// Adds/Removes comics from the store. Use -addComicToStore: even to override a comic that already exists
 - (void)addComicToStore:(NTSComic *)comic;
 - (void)removeComicFromStore:(NTSComic *)comic;
+
 
 - (NTSComic *)comicWithNumber:(NSNumber *)number;
 
