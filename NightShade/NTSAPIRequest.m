@@ -44,7 +44,7 @@
         }
         
         NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-        NTSComic *comic = [[NTSComic alloc] initWithJSONDictionary:dictionary];
+        NTSComic *comic = [NTSComic comicWithJSONDictionary:dictionary];
         
         if (getImage) {
             [comic downloadImageWithCompletionHandler:^(UIImage *image, NSError *imgError) {
