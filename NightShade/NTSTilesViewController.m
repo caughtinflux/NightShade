@@ -16,6 +16,7 @@
 @interface NTSTilesViewController ()
 
 - (NTSComic *)_comicForIndexPath:(NSIndexPath *)ip;
+- (NSIndexPath *)_indexPathForComic:(NTSComic *)comic;
 - (void)_addLatestComicToCollectionAndStore;
 - (void)_downloadMissingItemsInRange:(NSRange)range;
 
@@ -85,6 +86,11 @@
     return [[NTSComicStore defaultStore] comicWithNumber:[[NTSComicStore defaultStore] allAvailableComics][ip.item]];
 }
 
+- (NSIndexPath *)_indexPathForComic:(NTSComic *)comic
+{
+    return [NSIndexPath indexPathForItem:[[[NTSComicStore defaultStore] allAvailableComics] indexOfObject:comic.comicNumber] inSection:0];
+}
+
 - (void)_addLatestComicToCollectionAndStore
 {
     [NTSAPIRequest downloadLatestComicWithImage:YES completion:^(NTSComic *comic, NSError *error) {
@@ -96,42 +102,32 @@
         [[NTSComicStore defaultStore] commitChangesWithCompletionHandler:nil];
         
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
-        });
-        
+        RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]]; });
     }];
 }
 
 - (void)_downloadMissingItemsInRange:(NSRange)range
 {
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    [UIApp setNetworkActivityIndicatorVisible:YES];
+    
     NSInteger targetNumber = range.location + range.length;
     
     for (NSInteger comicNumber = range.location; comicNumber <= targetNumber; comicNumber++) {
         if ([self _localComicHasImage:@(comicNumber)]) {
             if (comicNumber == targetNumber) {
-                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+                [UIApp setNetworkActivityIndicatorVisible:NO];
             }
             continue;
         }
         [NTSAPIRequest downloadComicWithNumber:@(comicNumber) getImage:YES withCompletion:^(NTSComic *comic, NSError *error) {
             if (error) {
-                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+                [UIApp setNetworkActivityIndicatorVisible:NO];
                 return;
             }
             
             [[NTSComicStore defaultStore] addComicToStore:comic];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[[[NTSComicStore defaultStore] allAvailableComics] indexOfObject:comic.comicNumber] inSection:0]]];
-                
-                if (comicNumber == targetNumber) {
-                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-                }
-            });
-            }
-       ];
+            RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[self _indexPathForComic:comic]]]; });
+        }];
     }
 }
 
