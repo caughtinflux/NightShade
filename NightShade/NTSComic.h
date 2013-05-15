@@ -35,6 +35,10 @@
 @property(nonatomic, readonly) NSURL    *imageURL;
 @property(nonatomic, readonly) UIImage  *image;
 
+// These methods would return an autoreleased instance in a non-ARC world, but now they just do the same as the instance methods.
++ (instancetype)comicWithJSONDictionary:(NSDictionary *)dictionary;
++ (instancetype)comicWithContentsOfFile:(NSString *)path;
+
 
 // This method magically creates all properties except `image`.
 // You have to call downloadImageWithCompletionHandler: for it to be downloaded.

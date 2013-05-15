@@ -33,6 +33,18 @@ static NSString * const NTSComicImageURLKey   = @"NTSComicImageURL";
 static NSString * const NTSComicImageKey      = @"NTSComicImage";
 
 @implementation NTSComic {}
+
+#pragma mark - Convenience
++ (instancetype)comicWithJSONDictionary:(NSDictionary *)dictionary
+{
+    return [[self alloc] initWithJSONDictionary:dictionary];
+}
+
++ (instancetype)comicWithContentsOfFile:(NSString *)path
+{
+    return [[self alloc] initWithContentsOfFile:path];
+}
+
 #pragma mark - Designated Initializer(s)
 - (instancetype)initWithJSONDictionary:(NSDictionary *)dictionary
 {
