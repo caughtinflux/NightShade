@@ -22,15 +22,28 @@
 
 @class NTSComic;
 
-@interface NTSComicStore : NSObject 
+/*
+ NTSComicStore only saves to disk when -[NTSComicStore commitChanges] is called. Until then, all changes due to addComicToStore: and removeComicFromStore: will only be kept in memory.
+ This is useful in cases where the user may not want to save all the visible comics to disk.
+ 
+ NTSComicStore is thread safe. (At least, as far as I have seen... ;P)
+*/
+
+@interface NTSComicStore : NSObject
 
 + (instancetype)defaultStore;
 
-// Forcing a comic to be added will overwrite any existing comic at the save path. This might be needed in cases where the local comic doesn't have it's image data, but the new one does.
-- (void)addComicToStore:(NTSComic *)comic force:(BOOL)forced;
-- (void)removeComicFromStore:(NTSComic *)comic usingHandler:(void (^) (NSError *))handler;
+
+- (void)addComicToStore:(NTSComic *)comic;
+- (void)removeComicFromStore:(NTSComic *)comic;
 
 - (NTSComic *)comicWithNumber:(NSNumber *)number;
-- (NSArray *)allLocalComics;
+
+// Returns an array of NSNumber objects representing all comics currently in the store.
+// They can be retrieved using comicWithNumber:
+- (NSArray *)allAvailableComics;
+
+- (void)refreshComics;
+- (void)commitChangesWithCompletionHandler:(void(^)(void))completionHandler;
 
 @end

@@ -21,13 +21,22 @@
 #import "NTSComicStore.h"
 #import "NTSComic.h"
 
+#define kComicsDirectory [((NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES))[0]) stringByAppendingString:@"/Comics/"]
+
 @interface NTSComicStore () <NSFileManagerDelegate>
 {
+@private
     // Use our own instance of NSFileManager, for it will be used in background threads
     NSFileManager *_fileManager;
+    
+    // Use this mutable dictionary to store all the comics in memory. The comic number is the key to its respective comic.
+    NSMutableDictionary *_comicsDict;
+    
+    NSArray *_comicNumbers;
+    BOOL _comicNumbersNeedRefresh;
 }
 
-- (void)_createComicsDirectory;
+- (void)_createComicsDirectoryIfNecessary;
 - (NSString *)_pathForComicWithNumber:(NSNumber *)number;
 
 @end
@@ -52,76 +61,93 @@
     if ((self = [super init])) {
         _fileManager = [[NSFileManager alloc] init];
         _fileManager.delegate = self;
-        [self _createComicsDirectory];
+        [self _createComicsDirectoryIfNecessary];
     }
     return self;
 }
 
-- (void)addComicToStore:(NTSComic *)comic force:(BOOL)forced
+- (void)addComicToStore:(NTSComic *)comic
 {
     @synchronized(self) {
-        NSString *path = [self _pathForComicWithNumber:[comic comicNumber]];
-        if (forced == NO) {
-            if (![_fileManager fileExistsAtPath:path]) {
-                [comic saveToFileAtPath:path];
-            }
-        }
-        else {
-            // Remove the existing comic if a comic exists already
-            [self removeComicFromStore:comic usingHandler:^(NSError *error){
-                [comic saveToFileAtPath:path]; 
-            }];
-        }
+        _comicsDict[comic.comicNumber] = comic;
+        // Set _comicNumbersNeedRefresh to YES so that the next time -allAvailableComics is accessed, the array containing all the comic numbers are updated.
+        _comicNumbersNeedRefresh = YES;
     }
 }
 
-- (void)removeComicFromStore:(NTSComic *)comic usingHandler:(void (^) (NSError *))handler
+- (void)removeComicFromStore:(NTSComic *)comic
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        @synchronized(self) {
-            NSError *error = nil;
-            [_fileManager removeItemAtPath:[self _pathForComicWithNumber:[comic comicNumber]] error:&error];
-            if (handler) {
-                handler(error);
-            }
-        }
-    });
+    @synchronized(self) {
+        [_comicsDict removeObjectForKey:comic.comicNumber];
+        _comicNumbersNeedRefresh = YES;
+    }
 }
 
 - (NTSComic *)comicWithNumber:(NSNumber *)number
 {
-    return [[NTSComic alloc] initWithContentsOfFile:[self _pathForComicWithNumber:number]];
+    return _comicsDict[number];
 }
 
-- (NSArray *)allLocalComics
+- (NSArray *)allAvailableComics
 {
-    NSString *comicsDirectoryPath = [((NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES))[0]) stringByAppendingString:@"/Comics/"];
-    NSArray *dirContents = [_fileManager contentsOfDirectoryAtPath:comicsDirectoryPath error:NULL];
-    
-    // Order it by number
-    dirContents = [dirContents sortedArrayUsingComparator:^(NSString *obj1, NSString *obj2) {
-        return [obj1 localizedStandardCompare:obj2];
-    }];
-    
-    NSMutableArray *localComics = [NSMutableArray arrayWithCapacity:dirContents.count];
-    
-    for (NSString *comicName in dirContents) {
-        // Iterate through the paths, creating and adding comic objects as required.
-        if ([comicName hasSuffix:@".ntscomic"]) {
-            NSString *fullPath = [comicsDirectoryPath stringByAppendingString:comicName];
-            [localComics addObject:[[NTSComic alloc] initWithContentsOfFile:fullPath]];
-        }
+    // Only sort _comicNumbers if a refresh is required
+    if (!_comicNumbers || _comicNumbersNeedRefresh) {
+        _comicNumbers = [[_comicsDict allKeys] sortedArrayUsingComparator:^(NSNumber *obj1, NSNumber *obj2) {
+            return [obj1 compare:obj2];
+        }];
+        
+        _comicNumbers = [[_comicNumbers reverseObjectEnumerator] allObjects];
+        
+        _comicNumbersNeedRefresh = NO;
     }
     
-    // Do not want bad things happening, if by accident, so create NSArray.
-    return [NSArray arrayWithArray:localComics];
+    return _comicNumbers;
 }
 
-#pragma mark - Private Methods
-- (void)_createComicsDirectory
+- (void)refreshComics
 {
     @synchronized(self) {
-        [_fileManager createDirectoryAtPath:[((NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES))[0]) stringByAppendingString:@"/Comics/"]
+        
+        NSArray *dirContents = [_fileManager contentsOfDirectoryAtPath:kComicsDirectory error:NULL];
+        
+        _comicsDict = nil; // Make sure the current dictionary is released.
+        _comicsDict = [[NSMutableDictionary alloc] initWithCapacity:dirContents.count];
+        
+        for (NSString *comicName in dirContents) {
+            // Iterate through the paths, creating and adding comic objects as required.
+            if ([comicName hasSuffix:@".ntscomic"]) {
+                NTSComic *comic = [NTSComic comicWithContentsOfFile:[kComicsDirectory stringByAppendingString:comicName]];
+                if (comic) {
+                    _comicsDict[comic.comicNumber] = comic;
+                }
+                else {
+                    NSLog(@"An error occurred when creating a comic from %@", comicName);
+                }
+            }
+        }
+    }
+
+}
+
+- (void)commitChangesWithCompletionHandler:(void(^)(void))completionHandler
+{
+    @synchronized(self) {
+        [_comicsDict enumerateKeysAndObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(NSNumber *key, NTSComic *comic, BOOL *stop) {
+            [comic saveToFileAtPath:[self _pathForComicWithNumber:key]];
+        }];
+        
+        if (completionHandler) {
+            completionHandler();
+        }
+    }
+}
+
+
+#pragma mark - Private Methods
+- (void)_createComicsDirectoryIfNecessary
+{
+    @synchronized(self) {
+        [_fileManager createDirectoryAtPath:kComicsDirectory
             withIntermediateDirectories:YES
                              attributes:nil
                                   error:NULL]; // Doing this with withIntermediateDirectories set makes sure that it doesn't cause an error if the file already exists.
@@ -130,8 +156,7 @@
 
 - (NSString *)_pathForComicWithNumber:(NSNumber *)number
 {
-    NSString *comicsDirectoryPath = [((NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES))[0]) stringByAppendingString:@"/Comics/"];
-    return [comicsDirectoryPath stringByAppendingFormat:@"%@.ntscomic", [number stringValue]];
+    return [kComicsDirectory stringByAppendingFormat:@"%@.ntscomic", [number stringValue]];
 }
 
 @end
