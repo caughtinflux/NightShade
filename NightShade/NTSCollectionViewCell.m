@@ -22,7 +22,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface NTSCollectionViewCell ()
-- (void)_setup;
+- (void)setup;
 @end
 
 
@@ -32,7 +32,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self _setup];
+        [self setup];
     }
     return self;
 }
@@ -40,9 +40,20 @@
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     if ((self = [super initWithCoder:aDecoder])) {
-        [self _setup];
+        [self setup];
     }
     return self;
+}
+
+- (void)setup
+{
+    self.layer.shadowOpacity = 0.8f;
+    self.layer.shadowOffset = CGSizeZero;
+    self.layer.shadowRadius = 2.2f;
+    self.layer.masksToBounds = NO;
+    self.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.layer.shouldRasterize = YES;
+    self.layer.rasterizationScale = [UIScreen mainScreen].scale;
 }
 
 - (void)layoutSubviews
@@ -53,15 +64,12 @@
     self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
 }
 
-- (void)_setup
+
+- (void)setShowsActivityIndicator:(BOOL)showsActivityIndicator
 {
-    self.layer.shadowOpacity = 0.8f;
-    self.layer.shadowOffset = CGSizeZero;
-    self.layer.shadowRadius = 2.2f;
-    self.layer.masksToBounds = NO;
-    self.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.layer.shouldRasterize = YES;
-    self.layer.rasterizationScale = [UIScreen mainScreen].scale;
+    
 }
+
+
 
 @end
