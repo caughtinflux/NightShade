@@ -14,14 +14,10 @@
 #import "NTSComicStore.h"
 
 @interface NTSTilesViewController ()
-{
-    NSArray *_allComics;
-}
 
 - (NTSComic *)_comicForIndexPath:(NSIndexPath *)ip;
 - (void)_addLatestComicToCollectionAndStore;
-- (void)_downloadMissingItemsInRange:(NSRange)range addToStore:(BOOL)shouldAddToStore;
-- (void)_refreshComics;
+- (void)_downloadMissingItemsInRange:(NSRange)range;
 
 @end
 
@@ -35,10 +31,9 @@
     self.collectionView.backgroundColor = [UIColor colorWithWhite:.8f alpha:1.f];
     self.collectionView.delegate = self;
     
-    
-    [self _refreshComics];
+    [[NTSComicStore defaultStore] refreshComics];
     [self _addLatestComicToCollectionAndStore];
-    [self _downloadMissingItemsInRange:NSMakeRange(50, 20) addToStore:YES];
+    [self _downloadMissingItemsInRange:NSMakeRange(300, 20)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -55,8 +50,7 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    NSInteger count = _allComics.count;
-    return count;
+    return [[NTSComicStore defaultStore] allAvailableComics].count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath;
@@ -88,7 +82,7 @@
 #pragma mark - Private
 - (NTSComic *)_comicForIndexPath:(NSIndexPath *)ip
 {
-    return _allComics[ip.item];
+    return [[NTSComicStore defaultStore] comicWithNumber:[[NTSComicStore defaultStore] allAvailableComics][ip.item]];
 }
 
 - (void)_addLatestComicToCollectionAndStore
@@ -98,8 +92,9 @@
             return;
         }
         
-        [[NTSComicStore defaultStore] addComicToStore:comic force:YES];
-        [self _refreshComics];
+        [[NTSComicStore defaultStore] addComicToStore:comic];
+        [[NTSComicStore defaultStore] commitChangesWithCompletionHandler:nil];
+        
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]];
@@ -108,7 +103,7 @@
     }];
 }
 
-- (void)_downloadMissingItemsInRange:(NSRange)range addToStore:(BOOL)shouldAddToStore
+- (void)_downloadMissingItemsInRange:(NSRange)range
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     NSInteger targetNumber = range.location + range.length;
@@ -126,17 +121,17 @@
                 return;
             }
             
-            if (shouldAddToStore) {
-                NSLog(@"Downloaded: %@", comic);
-                [[NTSComicStore defaultStore] addComicToStore:comic force:YES];
-            }
+            [[NTSComicStore defaultStore] addComicToStore:comic];
             
-            if (comicNumber == targetNumber) {
-                [self _refreshComics];
-                [self.collectionView reloadData];
-                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[[[NTSComicStore defaultStore] allAvailableComics] indexOfObject:comic.comicNumber] inSection:0]]];
+                
+                if (comicNumber == targetNumber) {
+                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+                }
+            });
             }
-        }];
+       ];
     }
 }
 
@@ -144,11 +139,6 @@
 {
     // !!!!!!!
     return !!([[NTSComicStore defaultStore] comicWithNumber:number].image);
-}
-
-- (void)_refreshComics
-{
-    _allComics = [[[[NTSComicStore defaultStore] allLocalComics] reverseObjectEnumerator] allObjects];
 }
 
 @end
