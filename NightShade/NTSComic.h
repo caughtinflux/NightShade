@@ -48,6 +48,7 @@
 - (instancetype)initWithContentsOfFile:(NSString *)path;
 - (void)saveToFileAtPath:(NSString *)path;
 
-- (void)downloadImageWithCompletionHandler:(void (^) (UIImage *, NSError *))completionHandler;
+// An NSError object is passed in as an argument if anything goes wrong. The image can be accessed from the receiver's `image` property
+- (void)downloadImageWithCompletionHandler:(void (^) (NSError *))completionHandler;
 
 @end

@@ -34,7 +34,7 @@
 
 + (void)downloadComicWithNumber:(NSNumber *)comicNumber getImage:(BOOL)getImage withCompletion:(NTSCompletionHandler)handler;
 {
-    NSAssert((handler != nil), @"A completion handler must be called into NTSAPIRequest calls!");
+    NSAssert((handler != nil), @"A completion handler must be passed into NTSAPIRequest calls!");
     
 	[NSURLConnection sendAsynchronousRequest:[self _URLRequestForComicNumber:comicNumber] queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {		
 		if (error) {
@@ -47,7 +47,7 @@
         NTSComic *comic = [NTSComic comicWithJSONDictionary:dictionary];
         
         if (getImage) {
-            [comic downloadImageWithCompletionHandler:^(UIImage *image, NSError *imgError) {
+            [comic downloadImageWithCompletionHandler:^(NSError *imgError) {
                 handler(comic, error);
             }];
         }

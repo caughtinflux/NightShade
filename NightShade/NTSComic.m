@@ -104,16 +104,15 @@ static NSString * const NTSComicImageKey      = @"NTSComicImage";
     [NSKeyedArchiver archiveRootObject:self toFile:path];
 }
 
-- (void)downloadImageWithCompletionHandler:(void (^) (UIImage *, NSError *))completionHandler
+- (void)downloadImageWithCompletionHandler:(void (^) (NSError *))completionHandler
 {
     NSURLRequest *imageRequest = [[NSURLRequest alloc] initWithURL:_imageURL];
     [NSURLConnection sendAsynchronousRequest:imageRequest queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *reponse, NSData *receivedData, NSError *error) {
-        UIImage *image = [UIImage imageWithData:receivedData];
         
-        _image = [image copy];
+        _image = [[UIImage imageWithData:receivedData] copy];
         
         if (completionHandler) {
-            completionHandler(image, error);
+            completionHandler(error);
         }
     }];
 }
