@@ -5,7 +5,8 @@ Upcoming XKCD reader whose primary aim is to not suck.
 
 ### Contributing
 ----------------
-Have anything to add? Fork this repo, checkout to a new branch, and create a pull request.
+Have anything to add? Fork this repo, checkout to a new branch, and create a pull request. 
+Please adhere to the coding style used here.
 
 
 ### License
