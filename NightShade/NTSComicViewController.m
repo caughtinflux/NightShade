@@ -71,6 +71,18 @@
     [self layoutViews];
 }
 
+#pragma mark - Accessor Override
+- (void)setComic:(NTSComic *)comic
+{
+    _comic = comic;
+    
+    self.comicImageView.image = _comic.image;
+    self.navigationItem.title = _comic.title;
+
+    // Make sure everything is re-layouted
+    [self.view setNeedsLayout];
+}
+
 #pragma mark - Layout
 - (void)layoutViews
 {
