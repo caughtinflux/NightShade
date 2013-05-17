@@ -38,7 +38,7 @@
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [UIColor colorWithWhite:0.2f alpha:1.0f];
 	self.navigationItem.title = self.comic.title;
 	
 	UIButton *infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];

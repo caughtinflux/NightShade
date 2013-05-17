@@ -33,6 +33,8 @@
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	self.window.rootViewController = self.navigationController;
 	[self.window makeKeyAndVisible];
+    
+    [[UINavigationBar appearance] setTintColor:[UIColor colorWithWhite:0.2f alpha:1.f]];
 	
     return YES;
 }
