@@ -80,7 +80,6 @@
     return cell;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
 	NTSComic *comic = [self _comicForIndexPath:indexPath];
@@ -146,14 +145,14 @@
             }
             continue;
         }
+        
         [NTSAPIRequest downloadComicWithNumber:@(comicNumber) getImage:YES withCompletion:^(NTSComic *comic, NSError *error) {
-            if (error) {
-                [UIApp setNetworkActivityIndicatorVisible:NO];
-                return;
-            }
+            [UIApp setNetworkActivityIndicatorVisible:NO];
             
-            [[NTSComicStore defaultStore] addComicToStore:comic];
-            RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[self _indexPathForComic:comic]]]; });
+            if (!error) {
+                [[NTSComicStore defaultStore] addComicToStore:comic];
+                RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[self _indexPathForComic:comic]]]; });
+            }
         }];
     }
 }
