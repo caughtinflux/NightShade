@@ -19,8 +19,10 @@
 
 @end
 
+
 @implementation NTSComicViewController
 
+#pragma mark - View Lifecycle
 - (instancetype)initWithComic:(NTSComic *)comic
 {
 	self = [self initWithNibName:nil bundle:nil];
@@ -63,9 +65,10 @@
 	self.comicImageView.image = self.comic.image;
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewWillLayoutSubviews
 {
-	[self layoutViews];
+    [super viewWillLayoutSubviews];
+    [self layoutViews];
 }
 
 #pragma mark - Layout
@@ -73,11 +76,10 @@
 {
 	CGSize viewSize = self.view.bounds.size;
 	CGSize comicSize = self.comic.image.size;
-	CGFloat navBarHeight = self.navigationController.navigationBar.bounds.size.height;
 	
 	self.comicImageView.frame = CGRectMake(0, 0, comicSize.width, comicSize.height);
-
-	self.scrollView.frame = CGRectMake(0, 0, viewSize.width, viewSize.height - navBarHeight);
+    
+	self.scrollView.frame = CGRectMake(0, 0, viewSize.width, viewSize.height);
 	self.scrollView.contentInset = UIEdgeInsetsMake(8, 8, 8, 8);
 	self.scrollView.contentSize = comicSize;
 	self.scrollView.minimumZoomScale = (self.scrollView.frame.size.width - self.scrollView.contentInset.left * 2) / self.scrollView.contentSize.width;
@@ -120,8 +122,8 @@
     zoomRect.size.width  = self.scrollView.frame.size.width  / scale;
     
     // Set the correct origin that `center` is at the center of zoom rect.
-    zoomRect.origin.x = center.x - (zoomRect.size.width  / 2.0);
-    zoomRect.origin.y = center.y - (zoomRect.size.height / 2.0);
+    zoomRect.origin.x = center.x - (zoomRect.size.width  / 2.0f);
+    zoomRect.origin.y = center.y - (zoomRect.size.height / 2.0f);
     
     return zoomRect;
 }
