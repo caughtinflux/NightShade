@@ -62,6 +62,7 @@
         _fileManager = [[NSFileManager alloc] init];
         _fileManager.delegate = self;
         [self _createComicsDirectoryIfNecessary];
+        [self refreshComics];
     }
     return self;
 }
@@ -70,6 +71,10 @@
 #pragma mark - Modification
 - (void)addComicToStore:(NTSComic *)comic
 {
+    if (comic == nil) {
+        // Check this before the @synchronized block. No need to lock uncessarily.
+        return;
+    }
     @synchronized(self) {
         _comicsDict[comic.comicNumber] = comic;
         // Set _comicNumbersNeedRefresh to YES so that the next time -allAvailableComics is accessed, the array containing all the comic numbers are updated.
@@ -79,6 +84,9 @@
 
 - (void)removeComicFromStore:(NTSComic *)comic
 {
+    if (comic == nil) {
+        return;
+    }
     @synchronized(self) {
         [_comicsDict removeObjectForKey:comic.comicNumber];
         _comicNumbersNeedRefresh = YES;
@@ -108,6 +116,11 @@
     return _comicNumbers;
 }
 
+- (NTSComic *)latestComic
+{
+    NSNumber *latestComicNumber = [self allAvailableComics][0];
+    return [self comicWithNumber:latestComicNumber];
+}
 
 #pragma mark - Basics
 - (void)refreshComics

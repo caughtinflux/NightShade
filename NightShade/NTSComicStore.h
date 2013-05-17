@@ -44,6 +44,8 @@
 // They can be retrieved using comicWithNumber:
 - (NSArray *)allAvailableComics;
 
+- (NTSComic *)latestComic;
+
 - (void)refreshComics;
 - (void)commitChangesWithCompletionHandler:(void(^)(void))completionHandler;
 
