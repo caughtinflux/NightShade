@@ -1,7 +1,11 @@
 NightShade
 ==========
 
-Upcoming XKCD reader whose primary aim is to not suck
+Upcoming XKCD reader whose primary aim is to not suck.
+
+### Contributing
+----------------
+Have anything to add? Fork this repo, checkout to a new branch, and create a pull request.
 
 
 ### License
