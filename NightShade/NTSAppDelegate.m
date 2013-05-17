@@ -19,11 +19,21 @@
  */
 
 #import "NTSAppDelegate.h"
+#import "NTSTilesViewController.h"
 
 @implementation NTSAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+	NTSTilesViewController *tilesViewController = [[NTSTilesViewController alloc] initWithCollectionViewLayout:flowLayout];
+	
+	self.navigationController = [[UINavigationController alloc] initWithRootViewController:tilesViewController];
+
+	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	self.window.rootViewController = self.navigationController;
+	[self.window makeKeyAndVisible];
+	
     return YES;
 }
 

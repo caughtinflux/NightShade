@@ -7,7 +7,8 @@
 //
 
 #import "NTSTilesViewController.h"
-#import "NTSCollectionViewCell.h"
+#import "NTSComicPreviewCell.h"
+#import "NTSComicViewController.h"
 
 #import "NTSAPIRequest.h"
 #import "NTSComic.h"
@@ -29,12 +30,27 @@
 {
     [super viewDidLoad];
     
-    self.collectionView.backgroundColor = [UIColor colorWithWhite:.8f alpha:1.f];
+    self.collectionView.backgroundColor = [UIColor colorWithWhite:0.2f alpha:1.0f];
     self.collectionView.delegate = self;
     
     [[NTSComicStore defaultStore] refreshComics];
     [self _addLatestComicToCollectionAndStore];
     [self _downloadMissingItemsInRange:NSMakeRange(300, 20)];
+	[[self collectionView] registerClass:[NTSComicPreviewCell class] forCellWithReuseIdentifier:@"NTSComicPreviewCell"];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
+	
+	[self.navigationController setNavigationBarHidden:YES animated:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+	[super viewWillDisappear:animated];
+	
+	[self.navigationController setNavigationBarHidden:NO animated:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -56,12 +72,22 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath;
 {
-    static NSString *CellIdentifier = @"NTSComicPreviewCell";
+    static NSString *comicCellIdentifer = @"NTSComicPreviewCell";
     
-    NTSCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:CellIdentifier forIndexPath:indexPath];
-    cell.imageView.image = [[self _comicForIndexPath:indexPath] image];
+    NTSComicPreviewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:comicCellIdentifer forIndexPath:indexPath];
+    cell.imageView.image = [self _comicForIndexPath:indexPath].image;
     
     return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath
+{
+	NTSComic *comic = [self _comicForIndexPath:indexPath];
+	NTSComicViewController *comicViewController = [[NTSComicViewController alloc] initWithComic:comic];
+
+	//UIPageViewController *pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStylePageCurl navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+	
+	[[self navigationController] pushViewController:comicViewController animated:YES];
 }
 
 #pragma mark - Layout Delegate

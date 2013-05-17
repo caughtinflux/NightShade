@@ -19,8 +19,8 @@
  */
 #import <UIKit/UIKit.h>
 
-@interface NTSCollectionViewCell : UICollectionViewCell
+@interface NTSComicPreviewCell : UICollectionViewCell
 
-@property (nonatomic, weak) IBOutlet UIImageView *imageView;
+@property (nonatomic, strong) UIImageView *imageView;
 
 @end

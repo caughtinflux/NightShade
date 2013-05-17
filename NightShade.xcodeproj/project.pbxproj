@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		480764871711478A001C3508 /* NTSCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 480764861711478A001C3508 /* NTSCollectionViewCell.m */; };
+		03D608851744D0B800DFF836 /* NTSComicViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 03D608841744D0B800DFF836 /* NTSComicViewController.m */; };
+		480764871711478A001C3508 /* NTSComicPreviewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 480764861711478A001C3508 /* NTSComicPreviewCell.m */; };
 		4829A552170D985100E6105A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4829A551170D985100E6105A /* UIKit.framework */; };
 		4829A554170D985100E6105A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4829A553170D985100E6105A /* Foundation.framework */; };
 		4829A556170D985100E6105A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4829A555170D985100E6105A /* CoreGraphics.framework */; };
@@ -19,15 +20,15 @@
 		4829A568170D985100E6105A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4829A567170D985100E6105A /* Default-568h@2x.png */; };
 		4829A570170D995D00E6105A /* NTSAPIRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4829A56F170D995D00E6105A /* NTSAPIRequest.m */; };
 		4829A573170DA8B400E6105A /* NTSComic.m in Sources */ = {isa = PBXBuildFile; fileRef = 4829A572170DA8B400E6105A /* NTSComic.m */; };
-		48E56FD0171097EC002BED4E /* NightShade-iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48E56FCF171097EC002BED4E /* NightShade-iPhone.storyboard */; };
-		48E56FD217109803002BED4E /* NightShade-iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 48E56FD117109803002BED4E /* NightShade-iPad.storyboard */; };
 		48E56FD6171098D9002BED4E /* NTSTilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48E56FD5171098D9002BED4E /* NTSTilesViewController.m */; };
 		48E56FD917109A0A002BED4E /* NTSComicStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 48E56FD817109A0A002BED4E /* NTSComicStore.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		480764851711478A001C3508 /* NTSCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTSCollectionViewCell.h; sourceTree = "<group>"; };
-		480764861711478A001C3508 /* NTSCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTSCollectionViewCell.m; sourceTree = "<group>"; };
+		03D608831744D0B800DFF836 /* NTSComicViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTSComicViewController.h; sourceTree = "<group>"; };
+		03D608841744D0B800DFF836 /* NTSComicViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTSComicViewController.m; sourceTree = "<group>"; };
+		480764851711478A001C3508 /* NTSComicPreviewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTSComicPreviewCell.h; sourceTree = "<group>"; };
+		480764861711478A001C3508 /* NTSComicPreviewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTSComicPreviewCell.m; sourceTree = "<group>"; };
 		4818E7A8173D28FF009CA828 /* NightShade-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NightShade-Prefix.pch"; sourceTree = "<group>"; };
 		4829A54E170D985100E6105A /* NightShade.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NightShade.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4829A551170D985100E6105A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -45,8 +46,6 @@
 		4829A56F170D995D00E6105A /* NTSAPIRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTSAPIRequest.m; sourceTree = "<group>"; };
 		4829A571170DA8B400E6105A /* NTSComic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTSComic.h; sourceTree = "<group>"; };
 		4829A572170DA8B400E6105A /* NTSComic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTSComic.m; sourceTree = "<group>"; };
-		48E56FCF171097EC002BED4E /* NightShade-iPhone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "NightShade-iPhone.storyboard"; sourceTree = "<group>"; };
-		48E56FD117109803002BED4E /* NightShade-iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "NightShade-iPad.storyboard"; sourceTree = "<group>"; };
 		48E56FD4171098D9002BED4E /* NTSTilesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTSTilesViewController.h; sourceTree = "<group>"; };
 		48E56FD5171098D9002BED4E /* NTSTilesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTSTilesViewController.m; sourceTree = "<group>"; };
 		48E56FD717109A0A002BED4E /* NTSComicStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTSComicStore.h; sourceTree = "<group>"; };
@@ -136,8 +135,8 @@
 		48CBAA01172A3ABE001D8C88 /* Collection View Mods */ = {
 			isa = PBXGroup;
 			children = (
-				480764851711478A001C3508 /* NTSCollectionViewCell.h */,
-				480764861711478A001C3508 /* NTSCollectionViewCell.m */,
+				480764851711478A001C3508 /* NTSComicPreviewCell.h */,
+				480764861711478A001C3508 /* NTSComicPreviewCell.m */,
 			);
 			name = "Collection View Mods";
 			sourceTree = "<group>";
@@ -147,9 +146,9 @@
 			children = (
 				48E56FD4171098D9002BED4E /* NTSTilesViewController.h */,
 				48E56FD5171098D9002BED4E /* NTSTilesViewController.m */,
+				03D608831744D0B800DFF836 /* NTSComicViewController.h */,
+				03D608841744D0B800DFF836 /* NTSComicViewController.m */,
 				48CBAA01172A3ABE001D8C88 /* Collection View Mods */,
-				48E56FCF171097EC002BED4E /* NightShade-iPhone.storyboard */,
-				48E56FD117109803002BED4E /* NightShade-iPad.storyboard */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -210,8 +209,6 @@
 				4829A564170D985100E6105A /* Default.png in Resources */,
 				4829A566170D985100E6105A /* Default@2x.png in Resources */,
 				4829A568170D985100E6105A /* Default-568h@2x.png in Resources */,
-				48E56FD0171097EC002BED4E /* NightShade-iPhone.storyboard in Resources */,
-				48E56FD217109803002BED4E /* NightShade-iPad.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,7 +225,8 @@
 				4829A573170DA8B400E6105A /* NTSComic.m in Sources */,
 				48E56FD6171098D9002BED4E /* NTSTilesViewController.m in Sources */,
 				48E56FD917109A0A002BED4E /* NTSComicStore.m in Sources */,
-				480764871711478A001C3508 /* NTSCollectionViewCell.m in Sources */,
+				480764871711478A001C3508 /* NTSComicPreviewCell.m in Sources */,
+				03D608851744D0B800DFF836 /* NTSComicViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

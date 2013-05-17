@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NTSTilesViewController : UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface NTSTilesViewController : UICollectionViewController
 
 @end
