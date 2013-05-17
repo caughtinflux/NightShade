@@ -26,7 +26,6 @@ typedef void (^NTSCompletionHandler)(NTSComic *, NSError *);
 
 @interface NTSAPIRequest : NSObject
 
-
 + (void)downloadLatestComicWithImage:(BOOL)getImage completion:(NTSCompletionHandler)handler;
 + (void)downloadComicWithNumber:(NSNumber *)comicNumber getImage:(BOOL)getImage withCompletion:(NTSCompletionHandler)handler;
 
