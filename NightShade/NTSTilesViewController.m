@@ -81,6 +81,7 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
 	NTSComic *comic = [self _comicForIndexPath:indexPath];
 	NTSComicViewController *comicViewController = [[NTSComicViewController alloc] initWithComic:comic];
