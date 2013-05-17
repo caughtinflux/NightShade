@@ -18,7 +18,8 @@
 
 - (NTSComic *)_comicForIndexPath:(NSIndexPath *)ip;
 - (NSIndexPath *)_indexPathForComic:(NTSComic *)comic;
-- (void)_addLatestComicToCollectionAndStore;
+
+- (void)_populateCollectionViewWithLatestComics;
 - (void)_downloadMissingItemsInRange:(NSRange)range;
 
 @end
@@ -33,9 +34,7 @@
     self.collectionView.backgroundColor = [UIColor colorWithWhite:0.2f alpha:1.0f];
     self.collectionView.delegate = self;
     
-    [[NTSComicStore defaultStore] refreshComics];
-    [self _addLatestComicToCollectionAndStore];
-    [self _downloadMissingItemsInRange:NSMakeRange(300, 20)];
+    [self _populateCollectionViewWithLatestComics];
 	[[self collectionView] registerClass:[NTSComicPreviewCell class] forCellWithReuseIdentifier:@"NTSComicPreviewCell"];
 }
 
@@ -117,18 +116,25 @@
     return [NSIndexPath indexPathForItem:[[[NTSComicStore defaultStore] allAvailableComics] indexOfObject:comic.comicNumber] inSection:0];
 }
 
-- (void)_addLatestComicToCollectionAndStore
+- (void)_populateCollectionViewWithLatestComics
 {
     [NTSAPIRequest downloadLatestComicWithImage:YES completion:^(NTSComic *comic, NSError *error) {
-        if (error || ([self _localComicHasImage:comic.comicNumber])) {
+        if (error) {
+            NSLog(@"Error occurred when downloading the latest comic");
             return;
         }
         
+        // Adding the comic again if it exists doesn't create a duplicate, it only replaces. If comic is nil and a local version exists, the store keeps that version.
         [[NTSComicStore defaultStore] addComicToStore:comic];
-        [[NTSComicStore defaultStore] commitChangesWithCompletionHandler:nil];
-        
-        
-        RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]]; });
+        [[NTSComicStore defaultStore] commitChangesWithCompletionHandler:^{
+            if ([self _localComicHasImage:comic.comicNumber] == NO) {
+                // Add the latest comic if necessary.
+                RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]]; });
+            }
+            
+            // Now that at least one comic is being shown, download 20 older comics
+            [self _downloadMissingItemsInRange:NSMakeRange([comic.comicNumber unsignedIntegerValue] - 21, 20)];
+        }];
     }];
 }
 
