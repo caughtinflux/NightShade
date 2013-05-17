@@ -18,48 +18,43 @@
  limitations under the License.
  */
 
-#import "NTSCollectionViewCell.h"
+#import "NTSComicPreviewCell.h"
 #import <QuartzCore/QuartzCore.h>
 
-@interface NTSCollectionViewCell ()
-- (void)setup;
+@interface NTSComicPreviewCell ()
+@property (nonatomic, strong) UIView *dimmingView;
 @end
 
-
-@implementation NTSCollectionViewCell
+@implementation NTSComicPreviewCell
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
+	
     if (self) {
-        [self setup];
+		self.layer.shouldRasterize = YES;
+		self.layer.rasterizationScale = [UIScreen mainScreen].scale;
+		
+		_imageView = [[UIImageView alloc] init];
+		_imageView.contentMode = UIViewContentModeScaleAspectFill;
+		_imageView.clipsToBounds = YES;
+		
+		_dimmingView = [[UIView alloc] init];
+		_dimmingView.backgroundColor = [UIColor blackColor];
+		_dimmingView.alpha = 0.0f;
+		
+		[self addSubview:_imageView];
+		[self addSubview:_dimmingView];
     }
+	
     return self;
-}
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    if ((self = [super initWithCoder:aDecoder])) {
-        [self setup];
-    }
-    return self;
-}
-
-- (void)setup
-{
-    self.layer.shadowOpacity = 0.8f;
-    self.layer.shadowOffset = CGSizeZero;
-    self.layer.shadowRadius = 2.2f;
-    self.layer.masksToBounds = NO;
-    self.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.layer.shouldRasterize = YES;
-    self.layer.rasterizationScale = [UIScreen mainScreen].scale;
 }
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
     
+	self.dimmingView.frame = self.bounds;
     self.imageView.frame = self.bounds;
     self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
 }
@@ -68,6 +63,14 @@
 - (void)setShowsActivityIndicator:(BOOL)showsActivityIndicator
 {
     
+}
+
+- (void)setHighlighted:(BOOL)highlighted
+{
+	// XXX: Should this be dot or bracket syntax?
+	super.highlighted = highlighted;
+	
+	self.dimmingView.alpha = (self.highlighted ? 0.5f : 0.0f);
 }
 
 
