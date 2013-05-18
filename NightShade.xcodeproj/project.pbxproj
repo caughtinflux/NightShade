@@ -132,23 +132,23 @@
 			name = Model;
 			sourceTree = "<group>";
 		};
-		48CBAA01172A3ABE001D8C88 /* Collection View Mods */ = {
+		48CBAA01172A3ABE001D8C88 /* Collection View Cell */ = {
 			isa = PBXGroup;
 			children = (
 				480764851711478A001C3508 /* NTSComicPreviewCell.h */,
 				480764861711478A001C3508 /* NTSComicPreviewCell.m */,
 			);
-			name = "Collection View Mods";
+			name = "Collection View Cell";
 			sourceTree = "<group>";
 		};
 		48E56FD31710980E002BED4E /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				48CBAA01172A3ABE001D8C88 /* Collection View Cell */,
 				48E56FD4171098D9002BED4E /* NTSTilesViewController.h */,
 				48E56FD5171098D9002BED4E /* NTSTilesViewController.m */,
 				03D608831744D0B800DFF836 /* NTSComicViewController.h */,
 				03D608841744D0B800DFF836 /* NTSComicViewController.m */,
-				48CBAA01172A3ABE001D8C88 /* Collection View Mods */,
 			);
 			name = UI;
 			sourceTree = "<group>";

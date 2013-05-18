@@ -8,7 +8,9 @@
 
 #import "NTSTilesViewController.h"
 #import "NTSComicPreviewCell.h"
+#import "NTSCollectionFooterView.h"
 #import "NTSComicViewController.h"
+
 
 #import "NTSAPIRequest.h"
 #import "NTSComic.h"
@@ -16,14 +18,21 @@
 
 @interface NTSTilesViewController ()
 
-- (NTSComic *)_comicForIndexPath:(NSIndexPath *)ip;
-- (NSIndexPath *)_indexPathForComic:(NTSComic *)comic;
+- (BOOL)localComicHasImage:(NSNumber *)number;
 
-- (void)_populateCollectionViewWithLatestComics;
-- (void)_downloadMissingItemsInRange:(NSRange)range;
+- (NTSComic *)comicForIndexPath:(NSIndexPath *)ip;
+- (NSIndexPath *)indexPathForComic:(NTSComic *)comic;
+
+- (void)populateCollectionViewWithLatestComics;
+- (void)downloadMissingItemsInRange:(NSRange)range;
+
+// Downloads 20 more comics, adds them to the store *and* collection view.
+- (void)downloadMoreComics;
 
 @end
 
+
+static NSString * const NTSFooterViewIdentifier = @"NTSFooterView";
 
 @implementation NTSTilesViewController
 
@@ -34,8 +43,10 @@
     self.collectionView.backgroundColor = [UIColor colorWithWhite:0.2f alpha:1.0f];
     self.collectionView.delegate = self;
     
-    [self _populateCollectionViewWithLatestComics];
-	[[self collectionView] registerClass:[NTSComicPreviewCell class] forCellWithReuseIdentifier:@"NTSComicPreviewCell"];
+    [self populateCollectionViewWithLatestComics];
+    
+	[self.collectionView registerClass:[NTSComicPreviewCell class] forCellWithReuseIdentifier:@"NTSComicPreviewCell"];
+    [self.collectionView registerClass:[NTSCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:NTSFooterViewIdentifier];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -74,14 +85,14 @@
     static NSString *comicCellIdentifer = @"NTSComicPreviewCell";
     
     NTSComicPreviewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:comicCellIdentifer forIndexPath:indexPath];
-    cell.imageView.image = [self _comicForIndexPath:indexPath].image;
+    cell.imageView.image = [self comicForIndexPath:indexPath].image;
     
     return cell;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-	NTSComic *comic = [self _comicForIndexPath:indexPath];
+	NTSComic *comic = [self comicForIndexPath:indexPath];
 	NTSComicViewController *comicViewController = [[NTSComicViewController alloc] initWithComic:comic];
 
 	//UIPageViewController *pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStylePageCurl navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
@@ -106,17 +117,23 @@
 }
 
 #pragma mark - Private
-- (NTSComic *)_comicForIndexPath:(NSIndexPath *)ip
+- (BOOL)localComicHasImage:(NSNumber *)number
+{
+    // !!!!!!!
+    return !!([[NTSComicStore defaultStore] comicWithNumber:number].image);
+}
+
+- (NTSComic *)comicForIndexPath:(NSIndexPath *)ip
 {
     return [[NTSComicStore defaultStore] comicWithNumber:[[NTSComicStore defaultStore] allAvailableComics][ip.item]];
 }
 
-- (NSIndexPath *)_indexPathForComic:(NTSComic *)comic
+- (NSIndexPath *)indexPathForComic:(NTSComic *)comic
 {
     return [NSIndexPath indexPathForItem:[[[NTSComicStore defaultStore] allAvailableComics] indexOfObject:comic.comicNumber] inSection:0];
 }
 
-- (void)_populateCollectionViewWithLatestComics
+- (void)populateCollectionViewWithLatestComics
 {
     [NTSAPIRequest downloadLatestComicWithImage:YES completion:^(NTSComic *comic, NSError *error) {
         if (error) {
@@ -127,25 +144,25 @@
         // Adding the comic again if it exists doesn't create a duplicate, it only replaces. If comic is nil and a local version exists, the store keeps that version.
         [[NTSComicStore defaultStore] addComicToStore:comic];
         [[NTSComicStore defaultStore] commitChangesWithCompletionHandler:^{
-            if ([self _localComicHasImage:comic.comicNumber] == NO) {
+            if ([self localComicHasImage:comic.comicNumber] == NO) {
                 // Add the latest comic if necessary.
                 RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]]; });
             }
             
             // Now that at least one comic is being shown, download 20 older comics
-            [self _downloadMissingItemsInRange:NSMakeRange([comic.comicNumber unsignedIntegerValue] - 21, 20)];
+            [self downloadMissingItemsInRange:NSMakeRange([comic.comicNumber unsignedIntegerValue] - 21, 20)];
         }];
     }];
 }
 
-- (void)_downloadMissingItemsInRange:(NSRange)range
+- (void)downloadMissingItemsInRange:(NSRange)range
 {
     [UIApp setNetworkActivityIndicatorVisible:YES];
     
     NSInteger targetNumber = range.location + range.length;
     
     for (NSInteger comicNumber = range.location; comicNumber <= targetNumber; comicNumber++) {
-        if ([self _localComicHasImage:@(comicNumber)]) {
+        if ([self localComicHasImage:@(comicNumber)]) {
             if (comicNumber == targetNumber) {
                 [UIApp setNetworkActivityIndicatorVisible:NO];
             }
@@ -157,16 +174,16 @@
             
             if (!error) {
                 [[NTSComicStore defaultStore] addComicToStore:comic];
-                RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[self _indexPathForComic:comic]]]; });
+                RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[self indexPathForComic:comic]]]; });
             }
         }];
     }
 }
 
-- (BOOL)_localComicHasImage:(NSNumber *)number
+- (void)downloadMoreComics
 {
-    // !!!!!!!
-    return !!([[NTSComicStore defaultStore] comicWithNumber:number].image);
+    NSNumber *lastComicNumber = [[NTSComicStore defaultStore] allAvailableComics].lastObject;
+    [self downloadMissingItemsInRange:NSMakeRange([lastComicNumber unsignedIntegerValue] - 21, 20)];
 }
 
 @end
