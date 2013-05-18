@@ -8,7 +8,6 @@
 
 #import "NTSTilesViewController.h"
 #import "NTSComicPreviewCell.h"
-#import "NTSCollectionFooterView.h"
 #import "NTSComicViewController.h"
 
 
@@ -46,7 +45,6 @@ static NSString * const NTSFooterViewIdentifier = @"NTSFooterView";
     [self populateCollectionViewWithLatestComics];
     
 	[self.collectionView registerClass:[NTSComicPreviewCell class] forCellWithReuseIdentifier:@"NTSComicPreviewCell"];
-    [self.collectionView registerClass:[NTSCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:NTSFooterViewIdentifier];
 }
 
 - (void)viewWillAppear:(BOOL)animated
