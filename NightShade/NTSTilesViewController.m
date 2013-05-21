@@ -35,16 +35,17 @@
 @end
 
 @implementation NTSTilesViewController
+#pragma mark - View Lifecycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
+    [self.collectionView registerClass:[NTSComicPreviewCell class] forCellWithReuseIdentifier:@"NTSComicPreviewCell"];
     self.collectionView.backgroundColor = [UIColor colorWithWhite:0.2f alpha:1.0f];
     self.collectionView.delegate = self;
+    self.collectionView.dataSource = self;
     
     [self populateCollectionViewWithLatestComics];
-    
-	[self.collectionView registerClass:[NTSComicPreviewCell class] forCellWithReuseIdentifier:@"NTSComicPreviewCell"];
 }
 
 - (void)viewWillAppear:(BOOL)animated
