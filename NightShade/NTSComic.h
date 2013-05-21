@@ -49,6 +49,7 @@
 - (void)saveToFileAtPath:(NSString *)path;
 
 // An NSError object is passed in as an argument if anything goes wrong. The image can be accessed from the receiver's `image` property
+// The thread that `completionHandler` is called on is not guaranteed to be any specific thread. Make sure that you run it on the thread of your choice
 - (void)downloadImageWithCompletionHandler:(void (^) (NSError *))completionHandler;
 
 @end
