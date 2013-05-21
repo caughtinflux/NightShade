@@ -10,10 +10,14 @@
 #import "NTSComicPreviewCell.h"
 #import "NTSComicViewController.h"
 
-
 #import "NTSAPIRequest.h"
 #import "NTSComic.h"
 #import "NTSComicStore.h"
+
+
+#define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+#define kDefaultTileSize (IS_IPAD ? CGSizeMake(200, 200) : CGSizeMake(100, 100));
+
 
 @interface NTSTilesViewController ()
 
@@ -30,11 +34,7 @@
 
 @end
 
-
-static NSString * const NTSFooterViewIdentifier = @"NTSFooterView";
-
 @implementation NTSTilesViewController
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
