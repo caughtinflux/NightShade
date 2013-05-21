@@ -68,6 +68,7 @@
     // Dispose of any resources that can be recreated.
 }
 
+
 #pragma mark - Data Source
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
@@ -102,7 +103,16 @@
 #pragma mark - Layout Delegate
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? CGSizeMake(100, 100) : CGSizeMake(150, 150);
+    if (indexPath.item == 0) {
+        CGSize imageSize = [self comicForIndexPath:indexPath].image.size;
+        // Show the latest comic with a larger size. Thanks, @kirbylover4000
+        CGFloat width = ((imageSize.width < collectionView.bounds.size.width) ? imageSize.width : collectionView.bounds.size.width);
+        CGFloat height = ((imageSize.height < CGRectGetHeight(collectionView.bounds) * 0.5f) ? imageSize.height : CGRectGetHeight(collectionView.bounds) * 0.6f);
+        
+        return CGSizeMake(width, height);
+    }
+    
+    return kDefaultTileSize;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
