@@ -20,6 +20,7 @@
 		4829A568170D985100E6105A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4829A567170D985100E6105A /* Default-568h@2x.png */; };
 		4829A570170D995D00E6105A /* NTSAPIRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4829A56F170D995D00E6105A /* NTSAPIRequest.m */; };
 		4829A573170DA8B400E6105A /* NTSComic.m in Sources */ = {isa = PBXBuildFile; fileRef = 4829A572170DA8B400E6105A /* NTSComic.m */; };
+		4880DF361747AC5A00AAE12C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4880DF351747AC5A00AAE12C /* QuartzCore.framework */; };
 		48E56FD6171098D9002BED4E /* NTSTilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48E56FD5171098D9002BED4E /* NTSTilesViewController.m */; };
 		48E56FD917109A0A002BED4E /* NTSComicStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 48E56FD817109A0A002BED4E /* NTSComicStore.m */; };
 /* End PBXBuildFile section */
@@ -46,6 +47,7 @@
 		4829A56F170D995D00E6105A /* NTSAPIRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTSAPIRequest.m; sourceTree = "<group>"; };
 		4829A571170DA8B400E6105A /* NTSComic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTSComic.h; sourceTree = "<group>"; };
 		4829A572170DA8B400E6105A /* NTSComic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTSComic.m; sourceTree = "<group>"; };
+		4880DF351747AC5A00AAE12C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		48E56FD4171098D9002BED4E /* NTSTilesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTSTilesViewController.h; sourceTree = "<group>"; };
 		48E56FD5171098D9002BED4E /* NTSTilesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTSTilesViewController.m; sourceTree = "<group>"; };
 		48E56FD717109A0A002BED4E /* NTSComicStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTSComicStore.h; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4880DF361747AC5A00AAE12C /* QuartzCore.framework in Frameworks */,
 				4829A552170D985100E6105A /* UIKit.framework in Frameworks */,
 				4829A554170D985100E6105A /* Foundation.framework in Frameworks */,
 				4829A556170D985100E6105A /* CoreGraphics.framework in Frameworks */,
@@ -69,6 +72,7 @@
 		4829A545170D985100E6105A = {
 			isa = PBXGroup;
 			children = (
+				4880DF351747AC5A00AAE12C /* QuartzCore.framework */,
 				4829A557170D985100E6105A /* NightShade */,
 				4829A550170D985100E6105A /* Frameworks */,
 				4829A54F170D985100E6105A /* Products */,
@@ -257,8 +261,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Dylan Laws (5PG53H8462)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dylan Laws (5PG53H8462)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -279,8 +283,8 @@
 					"-Wall",
 					"-Werror",
 				);
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "EDD98B71-2A9F-401F-9C81-D887C3AEAD06";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "EDD98B71-2A9F-401F-9C81-D887C3AEAD06";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -299,8 +303,8 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Dylan Laws (5PG53H8462)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dylan Laws (5PG53H8462)";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -310,8 +314,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "EDD98B71-2A9F-401F-9C81-D887C3AEAD06";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "EDD98B71-2A9F-401F-9C81-D887C3AEAD06";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
