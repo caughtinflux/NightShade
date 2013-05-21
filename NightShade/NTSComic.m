@@ -107,8 +107,8 @@ static NSString * const NTSComicImageKey      = @"NTSComicImage";
 - (void)downloadImageWithCompletionHandler:(void (^) (NSError *))completionHandler
 {
     NSURLRequest *imageRequest = [[NSURLRequest alloc] initWithURL:_imageURL];
-    [NSURLConnection sendAsynchronousRequest:imageRequest queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *reponse, NSData *receivedData, NSError *error) {
-        
+    // Create an NSOperationQueue of our own to send the request on.
+    [NSURLConnection sendAsynchronousRequest:imageRequest queue:[NSOperationQueue new] completionHandler:^(NSURLResponse *reponse, NSData *receivedData, NSError *error) {
         _image = [[UIImage imageWithData:receivedData] copy];
         
         if (completionHandler) {
