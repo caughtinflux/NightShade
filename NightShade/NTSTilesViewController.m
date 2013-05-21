@@ -146,7 +146,7 @@
 {
     [NTSAPIRequest downloadLatestComicWithImage:YES completion:^(NTSComic *comic, NSError *error) {
         if (error) {
-            NSLog(@"Error occurred when downloading the latest comic");
+            NSLog(@"Error occurred when downloading the latest comic: Error %i:%@", error.code, error.localizedDescription);
             return;
         }
         
@@ -166,27 +166,33 @@
 
 - (void)downloadMissingItemsInRange:(NSRange)range
 {
-    [UIApp setNetworkActivityIndicatorVisible:YES];
-    
     NSInteger targetNumber = range.location + range.length;
+    NSMutableArray *comicsToDownload = [NSMutableArray array];
     
+    // Iterate through the range requested, creating a new array of the comics to download if the comic doesn't have an image already
     for (NSInteger comicNumber = range.location; comicNumber <= targetNumber; comicNumber++) {
-        if ([self localComicHasImage:@(comicNumber)]) {
-            if (comicNumber == targetNumber) {
-                [UIApp setNetworkActivityIndicatorVisible:NO];
-            }
-            continue;
+        if (![self localComicHasImage:@(comicNumber)]) {
+            [comicsToDownload addObject:@(comicNumber)];
         }
-        
-        [NTSAPIRequest downloadComicWithNumber:@(comicNumber) getImage:YES withCompletion:^(NTSComic *comic, NSError *error) {
-            [UIApp setNetworkActivityIndicatorVisible:NO];
-            
-            if (!error) {
-                [[NTSComicStore defaultStore] addComicToStore:comic];
-                RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[self indexPathForComic:comic]]]; });
-            }
-        }];
     }
+    
+    UIApp.networkActivityIndicatorVisible = YES;
+    [comicsToDownload enumerateObjectsUsingBlock:^(NSNumber *comicNumber, NSUInteger index, BOOL *stop) {
+        [NTSAPIRequest downloadComicWithNumber:comicNumber getImage:YES completion:^(NTSComic *comic, NSError *error) {
+            RUN_ON_MAIN_QUEUE(^{
+                if (index == (comicsToDownload.count - 1)) {
+                    // Turn of the activity indicator if it's the last object in the enumeration
+                    UIApp.networkActivityIndicatorVisible = NO;
+                }
+                
+                if (!error) {
+                    [[NTSComicStore defaultStore] addComicToStore:comic];
+                    [self.collectionView insertItemsAtIndexPaths:@[[self indexPathForComic:comic]]];
+                }
+            });
+            
+        }];
+    }];
 }
 
 - (void)downloadMoreComics
