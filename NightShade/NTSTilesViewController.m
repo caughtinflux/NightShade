@@ -146,21 +146,16 @@
 {
     [NTSAPIRequest downloadLatestComicWithImage:YES completion:^(NTSComic *comic, NSError *error) {
         if (error) {
-            NSLog(@"Error occurred when downloading the latest comic: Error %i:%@", error.code, error.localizedDescription);
+            NSLog(@"Error occurred when downloading the latest comic: %@", DESCRIBE_ERROR(error));
             return;
         }
-        
-        // Adding the comic again if it exists doesn't create a duplicate, it only replaces. If comic is nil and a local version exists, the store keeps that version.
-        [[NTSComicStore defaultStore] addComicToStore:comic];
-        [[NTSComicStore defaultStore] commitChangesWithCompletionHandler:^{
-            if ([self localComicHasImage:comic.comicNumber] == NO) {
-                // Add the latest comic if necessary.
-                RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]]; });
-            }
-            
-            // Now that at least one comic is being shown, download 20 older comics
-            [self downloadMissingItemsInRange:NSMakeRange([comic.comicNumber unsignedIntegerValue] - 21, 20)];
-        }];
+                
+        if ([self localComicHasImage:comic.comicNumber] == NO) {
+            [[NTSComicStore defaultStore] addComicToStore:comic];
+            RUN_ON_MAIN_QUEUE(^{ [self.collectionView insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:0 inSection:0]]]; });
+        }
+        // Now that at least one comic is being shown, download 20 older comics
+        [self downloadMissingItemsInRange:NSMakeRange([comic.comicNumber unsignedIntegerValue] - 21, 20)];
     }];
 }
 
@@ -176,21 +171,27 @@
         }
     }
     
+    NSMutableArray *indexPathsToInsert = [NSMutableArray arrayWithCapacity:comicsToDownload.count];
+    
     UIApp.networkActivityIndicatorVisible = YES;
     [comicsToDownload enumerateObjectsUsingBlock:^(NSNumber *comicNumber, NSUInteger index, BOOL *stop) {
         [NTSAPIRequest downloadComicWithNumber:comicNumber getImage:YES completion:^(NTSComic *comic, NSError *error) {
             RUN_ON_MAIN_QUEUE(^{
-                if (index == (comicsToDownload.count - 1)) {
-                    // Turn of the activity indicator if it's the last object in the enumeration
-                    UIApp.networkActivityIndicatorVisible = NO;
-                }
-                
                 if (!error) {
                     [[NTSComicStore defaultStore] addComicToStore:comic];
-                    [self.collectionView insertItemsAtIndexPaths:@[[self indexPathForComic:comic]]];
+                    [indexPathsToInsert addObject:[self indexPathForComic:comic]];
+                }
+                
+                if (index == (comicsToDownload.count - 1)) {
+                    // Turn off the activity indicator if it's the last object in the enumeration, and add ALL the things
+                    UIApp.networkActivityIndicatorVisible = NO;
+                    
+                    [self.collectionView performBatchUpdates:^{
+                        // Add them in the performBatchUpdates: block, so the insertion is animated, but not with the weird thing that was happening if it was done one by one
+                        [self.collectionView insertItemsAtIndexPaths:indexPathsToInsert];
+                    } completion:nil];
                 }
             });
-            
         }];
     }];
 }
