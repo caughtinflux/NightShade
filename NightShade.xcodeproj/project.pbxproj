@@ -72,7 +72,6 @@
 		4829A545170D985100E6105A = {
 			isa = PBXGroup;
 			children = (
-				4880DF351747AC5A00AAE12C /* QuartzCore.framework */,
 				4829A557170D985100E6105A /* NightShade */,
 				4829A550170D985100E6105A /* Frameworks */,
 				4829A54F170D985100E6105A /* Products */,
@@ -90,6 +89,7 @@
 		4829A550170D985100E6105A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4880DF351747AC5A00AAE12C /* QuartzCore.framework */,
 				4829A551170D985100E6105A /* UIKit.framework */,
 				4829A553170D985100E6105A /* Foundation.framework */,
 				4829A555170D985100E6105A /* CoreGraphics.framework */,
