@@ -144,7 +144,9 @@
 
 - (void)populateCollectionViewWithLatestComics
 {
+    UIApp.networkActivityIndicatorVisible = YES;
     [NTSAPIRequest downloadLatestComicWithImage:YES completion:^(NTSComic *comic, NSError *error) {
+        RUN_ON_MAIN_QUEUE(^{ UIApp.networkActivityIndicatorVisible = NO; });
         if (error) {
             NSLog(@"Error occurred when downloading the latest comic: %@", DESCRIBE_ERROR(error));
             return;
