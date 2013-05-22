@@ -38,7 +38,7 @@
     
 	[NSURLConnection sendAsynchronousRequest:[self _URLRequestForComicNumber:comicNumber] queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
 		if (error) {
-            NSLog(@"Error downloading comic data. %i : %@", error.code, error.localizedDescription);
+            DLog(@"Error downloading comic data: %@", DESCRIBE_ERROR(error));
             handler(nil, error);
             return;
         }
@@ -48,6 +48,7 @@
             NSError *jsonError;
             NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
             if (jsonError) {
+                DLog(@"An errror occurred when creating the dictionary from the JSON: %@", DESCRIBE_ERROR(jsonError));
                 handler(nil, jsonError);
                 return;
             }

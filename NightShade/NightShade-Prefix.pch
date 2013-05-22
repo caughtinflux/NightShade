@@ -36,6 +36,8 @@
         #define DLog(...)
     #endif
 
+    #define DESCRIBE_ERROR(err) [NSString stringWithFormat:@"%@ (%i)", err.localizedDescription, err.code]
+
     #define RUN_ON_MAIN_QUEUE(block) dispatch_async(dispatch_get_main_queue(), block)
 
 #endif // __OBJC__
