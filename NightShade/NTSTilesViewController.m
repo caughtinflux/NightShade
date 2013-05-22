@@ -174,26 +174,30 @@
     NSMutableArray *indexPathsToInsert = [NSMutableArray arrayWithCapacity:comicsToDownload.count];
     
     UIApp.networkActivityIndicatorVisible = YES;
-    [comicsToDownload enumerateObjectsUsingBlock:^(NSNumber *comicNumber, NSUInteger index, BOOL *stop) {
+
+    __block NSInteger downloadedComicsCount = 0;
+    for (NSNumber *comicNumber in comicsToDownload) {
         [NTSAPIRequest downloadComicWithNumber:comicNumber getImage:YES completion:^(NTSComic *comic, NSError *error) {
             RUN_ON_MAIN_QUEUE(^{
+                downloadedComicsCount++;
+                
                 if (!error) {
                     [[NTSComicStore defaultStore] addComicToStore:comic];
                     [indexPathsToInsert addObject:[self indexPathForComic:comic]];
                 }
                 
-                if (index == (comicsToDownload.count - 1)) {
-                    // Turn off the activity indicator if it's the last object in the enumeration, and add ALL the things
+                // Check to see if this is the last download
+                if (downloadedComicsCount == comicsToDownload.count) {
                     UIApp.networkActivityIndicatorVisible = NO;
                     
                     [self.collectionView performBatchUpdates:^{
-                        // Add them in the performBatchUpdates: block, so the insertion is animated, but not with the weird thing that was happening if it was done one by one
+                        // Add them in the performBatchUpdates: block, so the insertion is animated, but without the weird thing that was happening if it was done one by one
                         [self.collectionView insertItemsAtIndexPaths:indexPathsToInsert];
                     } completion:nil];
                 }
             });
         }];
-    }];
+    }
 }
 
 - (void)downloadMoreComics
